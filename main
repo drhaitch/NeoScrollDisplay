@@ -1,0 +1,82 @@
+'Set 4 WS2812B displays with GPIO15 as input
+gosub Loadsettings
+neo.setup 15,128
+neo.pixel 127,255
+NeoScroll.Setup 2,15,1
+'Set the first message as the ipaddress
+NeoScroll.print  WORD$(IP$,1)+"  "+WORD$(IP$,1)+"  "+WORD$(IP$,1)
+NEOSCROLL.NEXT scrlmsg$
+NeoScroll.colors scrlclr$
+NEOSCROLL.NEXTCOLORS scrlclr$
+
+
+gosub showhtml
+'autorefresh 1000
+onhtmlreload showhtml
+onhtmlchange showhtml
+'Set the refresh rate of the display (30 msec) - lower values -> scroll faster
+timer0 100, scrollme
+wait
+end
+
+Scrollme:
+ NeoScroll.scroll brightness
+return
+
+showhtml:
+a$ = "Recycle Bin <br>"
+a$ = a$ + "Message "+textbox$(scrlmsg$,"msgid") + "<br>"
+a$ = a$ + "colors are Blue Green Cyan Red Magenta Yellow White <br>"
+a$ = a$ + "color codes "+textbox$(scrlclr$,"scrlid")+"<br>"
+a$ = a$ + "Scroll Speed "+slider$(scrldelay,30,300,10)+str$(scrldelay)+"<br>"
+a$ = a$ + "Brightness "+slider$(brightness,20,255,5)+str$(brightness)+"<br>"
+a$ = a$ + button$("Save ",newmsg)+"<br>"
+cls
+HTML a$
+timer0  scrldelay,scrollme
+return
+
+newmsg:
+refresh    'sync the variables from webpage and the code
+config$ = ""
+WORD.SETPARAM config$, "scrlmsg", scrlmsg$
+WORD.SETPARAM config$, "scrlclr", scrlclr$
+WORD.SETPARAM config$, "scrldelay", str$(scrldelay)
+WORD.SETPARAM config$, "brightness", str$(brightness)
+print config$  'show what we are saving.
+file.save ""sign.ini"",config$
+wlog "Saving"
+'update the message we scroll
+NEOSCROLL.NEXT scrlmsg$
+NEOSCROLL.NEXTCOLORS scrlclr$
+return
+
+
+Loadsettings:
+wlog "Load in settings"
+config$ =""
+WORD.SETPARAM config$, "scrlmsg", "Recycle Here !!!  "
+WORD.SETPARAM config$, "scrlclr", "RGBYMCRGBYMCRGBYMC"
+WORD.SETPARAM config$, "scrldelay", "20"
+WORD.SETPARAM config$, "brightness", "55"
+
+
+'check if clock.ini file exists
+if FILE.EXISTS("sign.ini") = 0 then
+ file.save "sign.ini",config$
+ else
+ config$ = file.read$("sign.ini")
+ print "Read Config file"
+ print config$
+end if
+
+'Read the settings
+scrlmsg$ = WORD.GETPARAM$(config$,"scrlmsg")
+scrlclr$ = WORD.GETPARAM$(config$,"scrlclr")
+scrldelay = val(WORD.GETPARAM$(config$,"scrldelay"))
+brightness = val(WORD.GETPARAM$(config$,"brightness"))
+
+return
+
+
+
