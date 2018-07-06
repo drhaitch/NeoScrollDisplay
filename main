@@ -1,29 +1,27 @@
-'Set 4 WS2812B displays with GPIO15 as input
-gosub Loadsettings
-neo.setup 15,128
-neo.pixel 127,255
-NeoScroll.Setup 2,15,1
+'Set 2 WS2812B displays with GPIO15 as input
+gosub Loadsettings   'Load the saved settings
+NeoScroll.Setup 2,15,1    '2 8x8 displays , GPIO15, Serpentine config=1
 'Set the first message as the ipaddress
 NeoScroll.print  WORD$(IP$,1)+"  "+WORD$(IP$,1)+"  "+WORD$(IP$,1)
-NEOSCROLL.NEXT scrlmsg$
 NeoScroll.colors scrlclr$
+'then show the saved message
+NEOSCROLL.NEXT scrlmsg$
 NEOSCROLL.NEXTCOLORS scrlclr$
 
 
-gosub showhtml
-'autorefresh 1000
-onhtmlreload showhtml
-onhtmlchange showhtml
-'Set the refresh rate of the display (30 msec) - lower values -> scroll faster
+gosub showhtml  'show webpage
+onhtmlreload showhtml  'if htmlreload
+onhtmlchange showhtml  'if htmlchanges
+'Set the refresh rate of the display (100 msec) - lower values -> scroll faster
 timer0 100, scrollme
 wait
 end
 
-Scrollme:
+Scrollme:  'scroll the display
  NeoScroll.scroll brightness
 return
 
-showhtml:
+showhtml:    'create and show the webpage
 a$ = "Recycle Bin <br>"
 a$ = a$ + "Message "+textbox$(scrlmsg$,"msgid") + "<br>"
 a$ = a$ + "colors are Blue Green Cyan Red Magenta Yellow White <br>"
@@ -33,10 +31,10 @@ a$ = a$ + "Brightness "+slider$(brightness,20,255,5)+str$(brightness)+"<br>"
 a$ = a$ + button$("Save ",newmsg)+"<br>"
 cls
 HTML a$
-timer0  scrldelay,scrollme
+timer0  scrldelay,scrollme    'update the scroll speed if it has been changed.
 return
 
-newmsg:
+newmsg:    'if save button pressed
 refresh    'sync the variables from webpage and the code
 config$ = ""
 WORD.SETPARAM config$, "scrlmsg", scrlmsg$
@@ -54,16 +52,16 @@ return
 
 Loadsettings:
 wlog "Load in settings"
+'creat default values if this is a first run.
 config$ =""
 WORD.SETPARAM config$, "scrlmsg", "Recycle Here !!!  "
 WORD.SETPARAM config$, "scrlclr", "RGBYMCRGBYMCRGBYMC"
-WORD.SETPARAM config$, "scrldelay", "20"
+WORD.SETPARAM config$, "scrldelay", "50"
 WORD.SETPARAM config$, "brightness", "55"
-
 
 'check if clock.ini file exists
 if FILE.EXISTS("sign.ini") = 0 then
- file.save "sign.ini",config$
+ file.save "sign.ini",config$     'create file if not there.
  else
  config$ = file.read$("sign.ini")
  print "Read Config file"
