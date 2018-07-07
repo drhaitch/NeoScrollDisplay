@@ -1,6 +1,6 @@
-'Set 2 WS2812B displays with GPIO15 as input
+'Set 4 WS2812B displays with GPIO15 as input
 gosub Loadsettings   'Load the saved settings
-NeoScroll.Setup 2,15,1    '2 8x8 displays , GPIO15, Serpentine config=1
+NeoScroll.Setup 2,15,1
 'Set the first message as the ipaddress
 NeoScroll.print  WORD$(IP$,1)+"  "+WORD$(IP$,1)+"  "+WORD$(IP$,1)
 NeoScroll.colors scrlclr$
@@ -23,6 +23,7 @@ return
 
 showhtml:    'create and show the webpage
 a$ = "Recycle Bin <br>"
+a$ = a$ +"<style>body{background-color: #93b874;}</style>"  'set background color for page
 a$ = a$ + "Message "+textbox$(scrlmsg$,"msgid") + "<br>"
 a$ = a$ + "colors are Blue Green Cyan Red Magenta Yellow White <br>"
 a$ = a$ + "color codes "+textbox$(scrlclr$,"scrlid")+"<br>"
