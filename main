@@ -13,7 +13,8 @@ gosub showhtml  'show webpage
 onhtmlreload showhtml  'if htmlreload
 onhtmlchange showhtml  'if htmlchanges
 'Set the refresh rate of the display (100 msec) - lower values -> scroll faster
-timer0 100, scrollme
+pause 300
+timer0 scrldelay, scrollme
 wait
 end
 
@@ -43,7 +44,7 @@ WORD.SETPARAM config$, "scrlclr", scrlclr$
 WORD.SETPARAM config$, "scrldelay", str$(scrldelay)
 WORD.SETPARAM config$, "brightness", str$(brightness)
 print config$  'show what we are saving.
-file.save ""sign.ini"",config$
+file.save "sign.ini",config$
 wlog "Saving"
 'update the message we scroll
 NEOSCROLL.NEXT scrlmsg$
@@ -74,7 +75,6 @@ scrlmsg$ = WORD.GETPARAM$(config$,"scrlmsg")
 scrlclr$ = WORD.GETPARAM$(config$,"scrlclr")
 scrldelay = val(WORD.GETPARAM$(config$,"scrldelay"))
 brightness = val(WORD.GETPARAM$(config$,"brightness"))
-
 return
 
 
